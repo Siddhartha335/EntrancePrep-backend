@@ -10,6 +10,6 @@ COPY prisma ./prisma/
 
 COPY . .
 
-# RUN npx prisma generate
+RUN npx prisma generate
 
 CMD [ "yarn", "dev" ]

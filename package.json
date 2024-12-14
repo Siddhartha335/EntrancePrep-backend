@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "scripts": {
-    "start": "nodemon --env-file .env build/*.js",
+    "start": "node build/*.js",
     "dev": "tsc-watch --onSuccess \"npm start\" ",
     "build": "tsc",
     "lint": "eslint ."

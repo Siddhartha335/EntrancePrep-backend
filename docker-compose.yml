@@ -28,6 +28,7 @@ services:
 
   entranceprep-backend:
     container_name: entranceprep-backend
+    image: entranceprep-backend:v1
     build: .
     ports:
       - '8000:8000'
@@ -40,5 +41,5 @@ services:
       - .env
   
 volumes:
-  postgres-data:
-  entranceprep_node-modules:
+  postgres-data: #for storing database contents
+  entranceprep_node-modules:  # entranceprep_node-modules avoids copying node_modules into the image, which improve container performance

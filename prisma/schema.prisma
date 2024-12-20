@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  user_id         Int           @id @default(autoincrement())
+  user_id         String        @id @default(uuid())
   username        String        @unique
   email           String        @unique
   password_hash   String
@@ -85,7 +85,7 @@ model Test_Question {
 
 model User_Test {
   user_test_id   Int        @id @default(autoincrement())
-  user_id        Int
+  user_id        String     // Change from Int to String (UUID)
   test_id        Int
   start_time     DateTime   @default(now())
   end_time       DateTime?
@@ -105,24 +105,26 @@ model User_Answer {
   selected_answer String
   is_correct      Boolean
   user_test       User_Test @relation(fields: [user_test_id], references: [user_test_id])
-  question        Question  @relation(fields: [question_id], references: [question_id], name: "QuestionAnswers") // Reverse relation name
+  question        Question  @relation(fields: [question_id], references: [question_id], name: "QuestionAnswers")
 
-  user_id         Int
+  user_id         String    // Change from Int to String (UUID)
   user            User      @relation(fields: [user_id], references: [user_id])
 
   @@map("user_answers")
 }
 
+
 model Recommendation {
   recommendation_id Int       @id @default(autoincrement())
-  user_id           Int
+  user_id           String    // Change from Int to String (UUID)
   category_id       Int
   recommended_on    DateTime  @default(now())
-  user              User      @relation(fields: [user_id], references: [user_id], name: "UserRecommendations") // Reverse relation name
-  category          Category  @relation(fields: [category_id], references: [category_id], name: "CategoryRecommendations") // Reverse relation name
+  user              User      @relation(fields: [user_id], references: [user_id], name: "UserRecommendations")
+  category          Category  @relation(fields: [category_id], references: [category_id], name: "CategoryRecommendations")
 
   @@map("recommendations")
 }
+
 
 enum TestStatus {
   COMPLETED

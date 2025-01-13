@@ -31,7 +31,7 @@ app.get("/", (req:Request, res:Response) : void => {
     res.send("Welcome to EntrancePrep Backend API");
 });
 
-app.use("/api",routes)
+app.use("/api/v1",routes)
 
 //error handling and route not found error
 app.use(routeNotFound);

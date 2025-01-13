@@ -14,43 +14,45 @@ datasource db {
 }
 
 model User {
-  user_id         String        @id @default(uuid())
-  username        String        @unique
-  email           String        @unique
-  password_hash   String
-  registration_date DateTime     @default(now())
-  last_login      DateTime?
-  user_tests      User_Test[]
-  user_answers    User_Answer[]
-  recommendations  Recommendation[] @relation("UserRecommendations") // Reverse relation for recommendations
+  user_id           String           @id @default(uuid())
+  username          String           @unique
+  email             String           @unique
+  password          String
+  isAdmin           Boolean          @default(false)
+  isActive          Boolean          @default(true)
+  registration_date DateTime         @default(now())
+  last_login        DateTime?
+  user_tests        User_Test[]
+  user_answers      User_Answer[]
+  recommendations   Recommendation[] @relation("UserRecommendations") // Reverse relation for recommendations
 
   @@map("users")
 }
 
 model Test {
-  test_id        Int       @id @default(autoincrement())
-  test_name      String
+  test_id          Int             @id @default(autoincrement())
+  test_name        String
   test_description String?
-  duration       Int       // Time in minutes
-  is_full_length Boolean   @default(false)
-  is_adaptive    Boolean   @default(false)
-  category_id    Int
-  category       Category  @relation(fields: [category_id], references: [category_id], name: "CategoryTests") // Reverse relation for category
-  test_questions Test_Question[]
-  user_tests     User_Test[]
+  duration         Int // Time in minutes
+  is_full_length   Boolean         @default(false)
+  is_adaptive      Boolean         @default(false)
+  category_id      Int
+  category         Category        @relation(fields: [category_id], references: [category_id], name: "CategoryTests") // Reverse relation for category
+  test_questions   Test_Question[]
+  user_tests       User_Test[]
 
   @@map("tests")
 }
 
 model Category {
-  category_id      Int       @id @default(autoincrement())
-  category_name    String
-  parent_category_id Int?    // Nullable, Foreign Key for subcategories
-  parent_category  Category? @relation("CategoryParent", fields: [parent_category_id], references: [category_id])
-  subcategories    Category[] @relation("CategoryParent")
-  questions        Question[]
-  tests            Test[]     @relation("CategoryTests") // Reverse relation for tests
-  recommendations  Recommendation[] @relation("CategoryRecommendations") // Reverse relation for recommendations
+  category_id        Int              @id @default(autoincrement())
+  category_name      String
+  parent_category_id Int? // Nullable, Foreign Key for subcategories
+  parent_category    Category?        @relation("CategoryParent", fields: [parent_category_id], references: [category_id])
+  subcategories      Category[]       @relation("CategoryParent")
+  questions          Question[]
+  tests              Test[]           @relation("CategoryTests") // Reverse relation for tests
+  recommendations    Recommendation[] @relation("CategoryRecommendations") // Reverse relation for recommendations
 
   @@map("categories")
 }
@@ -65,35 +67,34 @@ model Question {
   time_limit       Int?
   user_answers     User_Answer[] @relation("QuestionAnswers") // Add reverse relation name
 
-  category         Category      @relation(fields: [category_id], references: [category_id])
-  test_questions   Test_Question[]
+  category       Category        @relation(fields: [category_id], references: [category_id])
+  test_questions Test_Question[]
 
   @@map("questions")
 }
 
 model Test_Question {
-  test_id        Int
-  question_id    Int
-  sequence       Int
-  test           Test      @relation(fields: [test_id], references: [test_id])
-  question       Question  @relation(fields: [question_id], references: [question_id])
+  test_id     Int
+  question_id Int
+  sequence    Int
+  test        Test     @relation(fields: [test_id], references: [test_id])
+  question    Question @relation(fields: [question_id], references: [question_id])
 
   @@id([test_id, question_id]) // Composite primary key for test_id and question_id
-
   @@map("test_questions")
 }
 
 model User_Test {
-  user_test_id   Int        @id @default(autoincrement())
-  user_id        String     // Change from Int to String (UUID)
-  test_id        Int
-  start_time     DateTime   @default(now())
-  end_time       DateTime?
-  score          Float?
-  status         TestStatus @default(IN_PROGRESS)
-  user           User       @relation(fields: [user_id], references: [user_id])
-  test           Test       @relation(fields: [test_id], references: [test_id])
-  user_answers   User_Answer[]
+  user_test_id Int           @id @default(autoincrement())
+  user_id      String // Change from Int to String (UUID)
+  test_id      Int
+  start_time   DateTime      @default(now())
+  end_time     DateTime?
+  score        Float?
+  status       TestStatus    @default(IN_PROGRESS)
+  user         User          @relation(fields: [user_id], references: [user_id])
+  test         Test          @relation(fields: [test_id], references: [test_id])
+  user_answers User_Answer[]
 
   @@map("user_tests")
 }
@@ -107,24 +108,22 @@ model User_Answer {
   user_test       User_Test @relation(fields: [user_test_id], references: [user_test_id])
   question        Question  @relation(fields: [question_id], references: [question_id], name: "QuestionAnswers")
 
-  user_id         String    // Change from Int to String (UUID)
-  user            User      @relation(fields: [user_id], references: [user_id])
+  user_id String // Change from Int to String (UUID)
+  user    User   @relation(fields: [user_id], references: [user_id])
 
   @@map("user_answers")
 }
 
-
 model Recommendation {
-  recommendation_id Int       @id @default(autoincrement())
-  user_id           String    // Change from Int to String (UUID)
+  recommendation_id Int      @id @default(autoincrement())
+  user_id           String // Change from Int to String (UUID)
   category_id       Int
-  recommended_on    DateTime  @default(now())
-  user              User      @relation(fields: [user_id], references: [user_id], name: "UserRecommendations")
-  category          Category  @relation(fields: [category_id], references: [category_id], name: "CategoryRecommendations")
+  recommended_on    DateTime @default(now())
+  user              User     @relation(fields: [user_id], references: [user_id], name: "UserRecommendations")
+  category          Category @relation(fields: [category_id], references: [category_id], name: "CategoryRecommendations")
 
   @@map("recommendations")
 }
-
 
 enum TestStatus {
   COMPLETED

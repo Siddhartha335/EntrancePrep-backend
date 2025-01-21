@@ -33,10 +33,11 @@ model Test {
   test_id          Int             @id @default(autoincrement())
   test_name        String
   test_description String?
-  duration         Int // Time in minutes
+  duration         Int             // Time in minutes
   is_full_length   Boolean         @default(false)
   is_adaptive      Boolean         @default(false)
   category_id      Int
+  type             String          // The type of the test (e.g., "Mock", "Final")
   category         Category        @relation(fields: [category_id], references: [category_id], name: "CategoryTests") // Reverse relation for category
   test_questions   Test_Question[]
   user_tests       User_Test[]
@@ -47,7 +48,7 @@ model Test {
 model Category {
   category_id        Int              @id @default(autoincrement())
   category_name      String
-  parent_category_id Int? // Nullable, Foreign Key for subcategories
+  parent_category_id Int?             // Nullable, Foreign Key for subcategories
   parent_category    Category?        @relation("CategoryParent", fields: [parent_category_id], references: [category_id])
   subcategories      Category[]       @relation("CategoryParent")
   questions          Question[]
@@ -59,16 +60,20 @@ model Category {
 
 model Question {
   question_id      Int           @id @default(autoincrement())
-  question_text    String
+  question_text    String        // The question text
   category_id      Int
-  difficulty_level String?
-  correct_answer   String
-  explanation      String?
-  time_limit       Int?
+  difficulty_level String?       // Difficulty level (e.g., "Easy", "Medium", "Hard")
+  question_type    String        // Type of the question (e.g., "MCQ", "True/False")
+  answers          String[]      // Array of answers (4 options)
+  right_answer     String        // Correct answer
+  explanation      String?       // Explanation for the answer (optional)
+  marks_of_question Int?         // Marks for the question
+  has_explanation  Boolean     // Whether there's an explanation available for the question
+  time_limit       Int?          // Optional time limit for the question
   user_answers     User_Answer[] @relation("QuestionAnswers") // Add reverse relation name
 
-  category       Category        @relation(fields: [category_id], references: [category_id])
-  test_questions Test_Question[]
+  category         Category      @relation(fields: [category_id], references: [category_id])
+  test_questions   Test_Question[]
 
   @@map("questions")
 }
@@ -76,13 +81,14 @@ model Question {
 model Test_Question {
   test_id     Int
   question_id Int
-  sequence    Int
+  sequence    Int      @default(autoincrement())
   test        Test     @relation(fields: [test_id], references: [test_id])
   question    Question @relation(fields: [question_id], references: [question_id])
 
   @@id([test_id, question_id]) // Composite primary key for test_id and question_id
   @@map("test_questions")
 }
+
 
 model User_Test {
   user_test_id Int           @id @default(autoincrement())

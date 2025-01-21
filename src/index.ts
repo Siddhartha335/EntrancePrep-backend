@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { checkDatabaseConnection } from "./config/index.js";
 import { errorHandler, routeNotFound } from "./middlewares/errorMiddleware.js";
 import routes from "./routes/index.js";
+import passport from "passport";
 
 const app:Express = express();
 
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use(passport.initialize());
 
 app.get("/", (req:Request, res:Response) : void => {
     res.send("Welcome to EntrancePrep Backend API");

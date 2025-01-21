@@ -2,9 +2,7 @@ import { body,validationResult } from "express-validator";
 import { Request,Response,NextFunction } from "express";
 
 export const testValidator = [
-    body("test_name").isLength({min:3}).withMessage("Test name must be atleast 3 characters long"),
-    body("duration").isNumeric().withMessage("Duration must be a number"),
-    body("category_id").isNumeric().withMessage("Category ID must be a number"),
+    body("test_type").isLength({min:3}).withMessage("Test type must be atleast 3 characters long"),
 ];
 
 export const validateTestDetails = (req:Request,res:Response,next:NextFunction) => {

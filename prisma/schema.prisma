@@ -31,11 +31,12 @@ model User {
 
 model Test {
   test_id          Int             @id @default(autoincrement())
-  test_name        String
-  test_description String?
+  name             String
+  description      String?
+  isActive         Boolean          @default(true)
   duration         Int             // Time in minutes
-  is_full_length   Boolean         @default(false)
-  is_adaptive      Boolean         @default(false)
+  isAdaptive      Boolean           @default(false)
+  hasNegativeMarking           Boolean          @default(false)
   category_id      Int
   type             String          // The type of the test (e.g., "Mock", "Final")
   category         Category        @relation(fields: [category_id], references: [category_id], name: "CategoryTests") // Reverse relation for category
@@ -47,8 +48,9 @@ model Test {
 
 model Category {
   category_id        Int              @id @default(autoincrement())
-  category_name      String
+  name               String
   parent_category_id Int?             // Nullable, Foreign Key for subcategories
+  isActive           Boolean          @default(true)
   parent_category    Category?        @relation("CategoryParent", fields: [parent_category_id], references: [category_id])
   subcategories      Category[]       @relation("CategoryParent")
   questions          Question[]

@@ -5,6 +5,7 @@ export async function subCategoryCreate(data: any) {
     let {name,isActive,category} = data;
 
     category = Number.parseInt(category);
+    console.log(category)
 
     const subCategory = await prisma.category.create({
         data: {

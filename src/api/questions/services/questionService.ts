@@ -81,8 +81,29 @@ export async function questionCreate(data: any) {
 
 
 
-export async function selectAllQuestion(data: any) {
+export async function selectAllQuestion(category:any) {
+    category = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
+    const allQuestions = await prisma.question.findMany({
+        where:{
+            category:{
+                name:category
+            }
+        },
+        include: {
+            category: true
+        }
+    });
 
+    if(!allQuestions) {
+        throw new Error('No questions found');
+    }
+
+    return allQuestions;
+
+}
+
+export async function createQuestionBank(data:any) {
+    const {  } = data;    
 }
 
 export async function selectQuestionById(data: any) {

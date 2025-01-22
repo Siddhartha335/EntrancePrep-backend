@@ -1,26 +1,26 @@
 import prisma from "../../../utils/db.js";
 
-export async function testCreate(data: any) {
+export async function questionCreate(data: any) {
     const { testType, questionType, question_text, answers, correctAnswer, category, subcategory, marks_of_question, difficultyLevel, hasExplanation, explanation } = data;
 
     try {
         // Step 1: Find or create the main category
         let categoryData = await prisma.category.findFirst({
-            where: { category_name: category }
+            where: { name: category }
         });
 
         if (!categoryData) {
             // If category doesn't exist, create it
             categoryData = await prisma.category.create({
-                data: { category_name: category }
+                data: { name: category }
             });
         }
 
         // Step 2: Create the test
         const test = await prisma.test.create({
             data: {
-                test_name: `${testType} Entrance Test`,
-                test_description: `${testType} Entrance Test`,
+                name: `${testType} Entrance Test`,
+                description: `${testType} Entrance Test`,
                 duration: 30,
                 category_id: categoryData.category_id,
                 type: testType,
@@ -54,14 +54,14 @@ export async function testCreate(data: any) {
         if (subcategory) {
             // Step 5.1: Check if subcategory exists
             let subcategoryData = await prisma.category.findFirst({
-                where: { category_name: subcategory }
+                where: { name: subcategory }
             });
 
             // Step 5.2: If subcategory doesn't exist, create it
             if (!subcategoryData) {
                 subcategoryData = await prisma.category.create({
                     data: {
-                        category_name: subcategory,
+                        name: subcategory,
                         parent_category_id: categoryData.category_id  // Link subcategory to parent category
                     }
                 });
@@ -81,18 +81,18 @@ export async function testCreate(data: any) {
 
 
 
-export async function selectAllTest(data: any) {
+export async function selectAllQuestion(data: any) {
 
 }
 
-export async function selectTestById(data: any) {
+export async function selectQuestionById(data: any) {
 
 }
 
-export async function changeTest(data: any) {
+export async function changeQuestion(data: any) {
 
 }
 
-export async function removeTest(data: any) {
+export async function removeQuestion(data: any) {
 
 }

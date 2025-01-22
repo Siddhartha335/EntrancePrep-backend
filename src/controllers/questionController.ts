@@ -1,10 +1,10 @@
 import { Request,Response } from "express";
-import { testCreate } from "../api/questions/services/questionService.js";
+import { questionCreate } from "../api/questions/services/questionService.js";
 
-export async function createTest(req:Request,res:Response) {
+export async function createQuestion(req:Request,res:Response) {
    const data = req.body; 
    try {
-        const newTest = await testCreate(data);
+        const newTest = await questionCreate(data);
         res.status(201).json({status:"true",message:"Question created successfully",test:newTest});
    }
    catch(err:any) {
@@ -12,18 +12,20 @@ export async function createTest(req:Request,res:Response) {
    }
 }
 
-export async function getAllTests(req:Request,res:Response) {
+
+
+export async function getAllQuestions(req:Request,res:Response) {
    
 }
 
-export async function getTestById(req:Request,res:Response) {
+export async function getQuestionById(req:Request,res:Response) {
    
 }
 
-export async function updateTest(req:Request,res:Response) {
+export async function updateQuestion(req:Request,res:Response) {
    
 }
 
-export async function deleteTest(req:Request,res:Response) {
+export async function deleteQuestion(req:Request,res:Response) {
    
 }

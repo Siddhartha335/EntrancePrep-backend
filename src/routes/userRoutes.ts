@@ -1,9 +1,10 @@
 import { RequestHandler, Router } from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/userController.js";
+import { loginUser, logoutUser, registerUser, changePassword } from "../controllers/userController.js";
 import { registerValidator, validateUserDetails } from "../api/user/validators/userValidator.js";
 import passport from "passport";
 import { generateToken } from "../api/user/utils/jwtUtils.js";
 import "../api/user/strategies/googleStrategy.js";
+import { protectedRoutes } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
@@ -26,5 +27,7 @@ router.get("/google/redirect", passport.authenticate("google", { failureRedirect
     return res.status(400).json({ status: false, message: "Invalid credentials" });
   }
 });
+
+router.put("/change-password", protectedRoutes as RequestHandler, changePassword)
 
 export default router;

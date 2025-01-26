@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import { createUser,validateUserLogin } from "../api/user/services/userService.js";
+import { createUser,passwordChange,validateUserLogin } from "../api/user/services/userService.js";
 import { generateToken } from "../api/user/utils/jwtUtils.js";
 
 export async function registerUser(req:Request,res:Response) {
@@ -45,6 +45,21 @@ export async function logoutUser(req:Request,res:Response) {
         res.cookie("token","",
             {httpOnly:true,expires:new Date(0)});
         res.status(200).json({status:"true",message:"User logged out successfully"});
+    }
+    catch(err:any) {
+        res.status(400).json({status:"false",message:err.message});
+    }
+}
+
+
+export async function changePassword(req:Request,res:Response) {
+
+    const {userId} = (req as any).user;
+    const data = req.body;
+    try {
+        await passwordChange(userId,data);
+        res.status(200).json({status:"true",message:"Password changed successfully"});
+        
     }
     catch(err:any) {
         res.status(400).json({status:"false",message:err.message});

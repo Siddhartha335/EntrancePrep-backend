@@ -35,3 +35,31 @@ export async function validateUserLogin(email:string,enteredPassword:string) {
     return user
 
 }
+
+export async function passwordChange(userId:string,data:any) {
+
+    const user = await prisma.user.findUnique({
+        where:{
+            user_id: userId
+        }
+    })
+    if(!user) {
+        throw new Error("User not found")
+    }
+    const isMatch = await matchPassword(data.oldPassword,user.password)
+    if(!isMatch) {
+        throw new Error("Old password does not match")
+    }
+    else {
+        const password = await hashPassword(data.password)
+        return await prisma.user.update({
+            where: {
+                user_id: userId
+            },
+            data: {
+                password: password
+            }
+        })
+    }
+    
+}

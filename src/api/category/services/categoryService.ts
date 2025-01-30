@@ -35,10 +35,54 @@ export async function selectCategoryById(data: any) {
 
 }
 
-export async function changeCategory(data: any) {
+export async function changeCategory(category_id:number,data: any) {
 
+    const category = await prisma.category.findUnique({
+        where: {
+            category_id
+        }
+    });
+
+    if(!category) {
+        throw new Error('Category not found');
+    }
+
+    const newCategory = await prisma.category.update({
+        where: {
+            category_id
+        },
+        data: {
+            ...data
+        }
+    });
+
+    if(!newCategory) {
+        throw new Error('Failed to update category');
+    }
+
+    return newCategory;
 }
 
-export async function removeCategory(data: any) {
+export async function removeCategory(category_id:number) {
+    const category = await prisma.category.findUnique({
+        where: {
+            category_id
+        }
+    });
 
+    if(!category) {
+        throw new Error('Category not found');
+    }
+
+    const deletedCategory = await prisma.category.delete({
+        where: {
+            category_id
+        }
+    });
+
+    if(!deletedCategory) {
+        throw new Error('Failed to delete category');
+    }
+
+    return deletedCategory;
 }

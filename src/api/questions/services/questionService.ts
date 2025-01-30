@@ -16,16 +16,17 @@ export async function questionCreate(data: any) {
             });
         }
 
-        // Step 2: Create the test
-        const test = await prisma.test.create({
-            data: {
-                name: `${testType} Entrance Test`,
-                description: `${testType} Entrance Test`,
-                duration: 30,
-                category_id: categoryData.category_id,
-                type: testType,
+        // Step 2: Associate the test with the category
+        const test = await prisma.test.findFirst({
+            where: { 
+                type: testType, 
+                category_id: categoryData.category_id
             }
-        });
+        })
+
+        if (!test) {
+            throw new Error('Test not found');
+        }
 
         // Step 3: Create the question
         const question = await prisma.question.create({
@@ -45,7 +46,7 @@ export async function questionCreate(data: any) {
         // Step 4: Link the question to the test
         await prisma.test_Question.create({
             data: {
-                test_id: test.test_id,
+                test_id: (test as any).test_id,
                 question_id: question.question_id,
             }
         });
@@ -80,31 +81,114 @@ export async function questionCreate(data: any) {
 }
 
 
-
 export async function selectAllQuestion(category:any) {
-    category = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
-    const allQuestions = await prisma.question.findMany({
-        where:{
-            category:{
-                name:category
+    if(category !== undefined) {
+        category = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
+
+        const allQuestions = await prisma.question.findMany({
+            where:{
+                category:{
+                    name:category
+                }
+            },
+            include: {
+                category: true
             }
-        },
-        include: {
-            category: true
+        });
+    
+        if(!allQuestions) {
+            throw new Error('No questions found');
         }
-    });
-
-    if(!allQuestions) {
-        throw new Error('No questions found');
+    
+        return allQuestions;
     }
-
-    return allQuestions;
+    else {
+        const allQuestions = await prisma.question.findMany({
+            include: {
+                category: true
+            }
+        });
+    
+        if(!allQuestions) {
+            throw new Error('No questions found');
+        }
+    
+        return allQuestions;
+    }
+    
 
 }
 
-export async function createQuestionBank(data:any) {
-    const {  } = data;    
-}
+export async function createQuestionBank(data: any) {
+    const { title, testType, description, duration, adaptive, negativeMarking, category, questions, scheduleType } = data;
+  
+    // Fetch categories from the database
+    const categories = await prisma.category.findMany({
+      where: { name: { in: category } },
+    });
+  
+    if (categories.length !== category.length) {
+      throw new Error("Some categories were not found.");
+    }
+  
+    // Create the Test record
+    const test = await prisma.test.create({
+      data: {
+        name: title,
+        description: description,
+        duration: parseInt(duration),
+        isAdaptive: adaptive,
+        hasNegativeMarking: negativeMarking,
+        type: testType,
+        category_id: categories[0]?.category_id, // Assigning a primary category
+        is_question_bank:true
+      },
+    });
+  
+    // **Step 1: Create a single QuestionBank**
+    const questionBank = await prisma.questionBank.create({
+      data: {
+        schedule_type: scheduleType.toUpperCase(),
+        test_id: test.test_id,
+      },
+    });
+  
+    // **Step 2: Associate categories with the QuestionBank**
+    const questionBankCategories = categories.map((categoryObj) => ({
+      question_bank_id: questionBank.question_bank_id,
+      category_id: categoryObj.category_id,
+    }));
+  
+    for (const qbc of questionBankCategories) {
+      await prisma.questionBankCategory.create({
+        data: qbc,
+      });
+    }
+  
+    // **Step 3: Associate questions with the QuestionBank**
+    const questionRecords = await prisma.question.findMany({
+      where: { question_text: { in: questions } },
+      select: { question_id: true },
+    });
+  
+    if (questionRecords.length !== questions.length) {
+      throw new Error("Some questions were not found.");
+    }
+  
+    const questionBankQuestions = questionRecords.map((question) => ({
+      question_bank_id: questionBank.question_bank_id,
+      question_id: question.question_id,
+    }));
+  
+    for (const qbq of questionBankQuestions) {
+      await prisma.questionBankQuestion.create({
+        data: qbq,
+      });
+    }
+  
+    return test;
+  }
+  
 
 export async function selectQuestionById(data: any) {
 

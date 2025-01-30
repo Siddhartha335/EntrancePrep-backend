@@ -6,8 +6,8 @@ const router = Router();
 
 router.post("/create",protectedRoutes as RequestHandler, isAdmin as RequestHandler, createCategory);
 router.get("/",protectedRoutes as RequestHandler, isAdmin as RequestHandler, getAllCategory);
-router.get("/:categoryId", getCategoryById);
-router.put("/:categoryId", updateCategory);
-router.delete("/:categoryId", deleteCategory);
+router.get("/:category_id", getCategoryById);
+router.put("/:category_id",protectedRoutes as RequestHandler, isAdmin as RequestHandler, updateCategory);
+router.delete("/:category_id", protectedRoutes as RequestHandler, isAdmin as RequestHandler,deleteCategory);
 
 export default router;

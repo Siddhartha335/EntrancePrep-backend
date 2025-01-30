@@ -29,19 +29,26 @@ model User {
   @@map("users")
 }
 
+enum ScheduleType {
+  FIXED
+  FLEXIBLE
+}
+
 model Test {
   test_id          Int             @id @default(autoincrement())
   name             String
   description      String?
   isActive         Boolean          @default(true)
   duration         Int             // Time in minutes
-  isAdaptive      Boolean           @default(false)
-  hasNegativeMarking           Boolean          @default(false)
+  isAdaptive       Boolean          @default(false)
+  hasNegativeMarking Boolean        @default(false)
   category_id      Int
   type             String          // The type of the test (e.g., "Mock", "Final")
+  is_question_bank Boolean          @default(false)
   category         Category        @relation(fields: [category_id], references: [category_id], name: "CategoryTests") // Reverse relation for category
   test_questions   Test_Question[]
   user_tests       User_Test[]
+  question_banks   QuestionBank[]  @relation("TestQuestionBanks") // Corrected relation name
 
   @@map("tests")
 }
@@ -56,6 +63,7 @@ model Category {
   questions          Question[]
   tests              Test[]           @relation("CategoryTests") // Reverse relation for tests
   recommendations    Recommendation[] @relation("CategoryRecommendations") // Reverse relation for recommendations
+  question_banks     QuestionBankCategory[] @relation("CategoryQuestionBanks")  // Many-to-many with QuestionBank
 
   @@map("categories")
 }
@@ -70,14 +78,49 @@ model Question {
   right_answer     String        // Correct answer
   explanation      String?       // Explanation for the answer (optional)
   marks_of_question Int?         // Marks for the question
-  has_explanation  Boolean     // Whether there's an explanation available for the question
+  has_explanation  Boolean       // Whether there's an explanation available for the question
   time_limit       Int?          // Optional time limit for the question
   user_answers     User_Answer[] @relation("QuestionAnswers") // Add reverse relation name
 
   category         Category      @relation(fields: [category_id], references: [category_id])
   test_questions   Test_Question[]
+  question_banks   QuestionBankQuestion[] @relation("QuestionQuestionBanks") // Many-to-many with QuestionBank
 
   @@map("questions")
+}
+
+model QuestionBank {
+  question_bank_id Int         @id @default(autoincrement())
+  schedule_type    ScheduleType // Enum type for FIXED or FLEXIBLE
+  test_id          Int         // Foreign key to Test
+  test             Test        @relation(fields: [test_id], references: [test_id], name: "TestQuestionBanks")
+  
+  categories       QuestionBankCategory[]
+  questions        QuestionBankQuestion[]
+
+  @@map("question_banks")
+}
+
+// Junction table to link QuestionBank with Categories
+model QuestionBankCategory {
+  id               Int @id @default(autoincrement())
+  question_bank_id Int
+  category_id      Int
+  question_bank    QuestionBank @relation(fields: [question_bank_id], references: [question_bank_id])
+  category         Category     @relation(fields: [category_id], references: [category_id], name: "CategoryQuestionBanks")
+  
+  @@map("question_bank_categories")
+}
+
+// Junction table to link QuestionBank with Questions
+model QuestionBankQuestion {
+  id               Int @id @default(autoincrement())
+  question_bank_id Int
+  question_id      Int
+  question_bank    QuestionBank @relation(fields: [question_bank_id], references: [question_bank_id])
+  question         Question     @relation(fields: [question_id], references: [question_id],name: "QuestionQuestionBanks")
+  
+  @@map("question_bank_questions")
 }
 
 model Test_Question {
@@ -90,7 +133,6 @@ model Test_Question {
   @@id([test_id, question_id]) // Composite primary key for test_id and question_id
   @@map("test_questions")
 }
-
 
 model User_Test {
   user_test_id Int           @id @default(autoincrement())

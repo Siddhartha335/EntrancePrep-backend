@@ -15,13 +15,11 @@ export async function questionCreate(data: any) {
                 data: { name: category }
             });
         }
-
         // Step 2: Associate the test with the category
         const test = await prisma.test.findFirst({
             where: { 
                 type: testType, 
-                category_id: categoryData.category_id
-            }
+            },
         })
 
         if (!test) {
@@ -85,14 +83,21 @@ export async function selectAllQuestion(category:any) {
     if(category !== undefined) {
         category = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
 
-        const allQuestions = await prisma.question.findMany({
-            where:{
-                category:{
-                    name:category
-                }
+        const allQuestions = await prisma.test_Question.findMany({
+            include:{
+                question: {
+                    include: {
+                        category: true
+                    }
+                },
+                test: true
             },
-            include: {
-                category: true
+            where: {
+                question: {
+                    category: {
+                        name: category
+                    }
+                }
             }
         });
     
@@ -103,9 +108,14 @@ export async function selectAllQuestion(category:any) {
         return allQuestions;
     }
     else {
-        const allQuestions = await prisma.question.findMany({
-            include: {
-                category: true
+        const allQuestions = await prisma.test_Question.findMany({
+            include:{
+                question: {
+                    include: {
+                        category: true
+                    }
+                },
+                test: true
             }
         });
     

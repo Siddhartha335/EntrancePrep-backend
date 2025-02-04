@@ -12,6 +12,7 @@ export async function categoryCreate(data: any) {
         return category;
    }
     catch(error) {
+        console.log(error);
         throw new Error('Failed to create category');
     }
 

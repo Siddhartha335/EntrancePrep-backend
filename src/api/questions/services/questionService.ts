@@ -98,7 +98,8 @@ export async function selectAllQuestion(category:any) {
                         name: category
                     }
                 }
-            }
+            },
+            take:25
         });
     
         if(!allQuestions) {

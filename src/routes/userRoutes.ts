@@ -18,7 +18,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 router.get("/google/redirect", passport.authenticate("google", { failureRedirect: "/login", session: false }), (req: any, res: any) => {
   const user = req.user;
   if (user) {
-    generateToken(res, user.id);
+    generateToken(res, user.user_id);
     user.password = undefined as any;
     // res.status(200).json(user);
     const frontend_url = `${process.env.FRONTEND_URL}/login/success?user=${encodeURIComponent(JSON.stringify(user))}`;

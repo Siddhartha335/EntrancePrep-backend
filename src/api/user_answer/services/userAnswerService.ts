@@ -26,6 +26,10 @@ export async function selectAllUserAnswer(user_id:string,user_test_id:number) {
         where: {
             user_id: user_id,
             user_test_id: user_test_id
+        },
+        include:{
+            question: true,
+            user_test: true
         }
     })
 

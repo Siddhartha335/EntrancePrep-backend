@@ -130,6 +130,34 @@ export async function selectAllQuestion(category:any) {
 
 }
 
+export async function selectAllTestQuestion(test_id: any) {
+    console.log(test_id);
+    if (test_id !== undefined) {
+        test_id = parseInt(test_id);
+        // Select distinct question IDs for the given test_id and limit to 100
+        const allQuestions = await prisma.test_Question.findMany({
+            where: {
+                test_id: test_id,  // Filtering by test_id
+            },
+            include:{
+                question: {
+                    include: {
+                        category: true
+                    }
+                },
+                test: true
+            },
+        });
+
+        if (!allQuestions || allQuestions.length === 0) {
+            throw new Error('No questions found');
+        }
+
+        return allQuestions;
+    }
+}
+
+
 export async function createQuestionBank(data: any) {
     const { title, testType, description, duration, adaptive, negativeMarking, category, questions, scheduleType } = data;
   

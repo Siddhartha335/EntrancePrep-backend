@@ -23,7 +23,22 @@ export async function selectAllUserTest() {
 
 }
 
-export async function selectCategoryById(data: any) {
+export async function selectUserTestById(user_id:string) {
+
+    const getUserTest = await prisma.user_Test.findMany({
+        where:{
+            user_id: user_id
+        },
+        include:{
+            test: true
+        }
+    })
+
+    if(!getUserTest) {
+        throw new Error('User hadnt taken any test');
+    }
+
+    return getUserTest
 
 }
 

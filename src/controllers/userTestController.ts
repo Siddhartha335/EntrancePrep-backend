@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import { changeUserTest, userTestCreate } from "../api/user_taking_test/services/userTestServivce.js";
+import { changeUserTest, selectUserTestById, userTestCreate } from "../api/user_taking_test/services/userTestServivce.js";
 
 export async function createUserTest(req:Request,res:Response) {
 
@@ -18,6 +18,15 @@ export async function getAllUserTest(req:Request,res:Response) {
 }
 
 export async function getUserTestById(req:Request,res:Response) {
+
+    const {user_id} = req.params;
+    try {
+        const userTest = await selectUserTestById(user_id);
+        res.status(200).json({status:"true",message:"User test fetched successfully",userTest:userTest});
+    }
+    catch(err:any) {
+        res.status(400).json({status:"false",message:err.message});
+    }
    
 }
 

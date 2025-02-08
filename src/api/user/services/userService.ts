@@ -63,3 +63,18 @@ export async function passwordChange(userId:string,data:any) {
     }
     
 }
+
+export async function getAllUser() {
+
+    const users = await prisma.user.findMany({
+        where:{
+            isAdmin: false
+        }
+    });
+
+    if(!users) {
+        throw new Error("Users not found")
+    }
+
+    return users;
+}

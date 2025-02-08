@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import { createUser,passwordChange,validateUserLogin } from "../api/user/services/userService.js";
+import { createUser,getAllUser,passwordChange,validateUserLogin } from "../api/user/services/userService.js";
 import { generateToken } from "../api/user/utils/jwtUtils.js";
 
 export async function registerUser(req:Request,res:Response) {
@@ -64,4 +64,16 @@ export async function changePassword(req:Request,res:Response) {
     catch(err:any) {
         res.status(400).json({status:"false",message:err.message});
     }
+}
+
+export async function getUsers(req:Request,res:Response) {
+
+    try {
+        const allUsers = await getAllUser();
+        res.status(200).json({status:"true",message:"All users fetched successfully",users:allUsers});
+    }
+    catch(err:any) {
+        res.status(400).json({status:"false",message:err.message});
+    }
+
 }

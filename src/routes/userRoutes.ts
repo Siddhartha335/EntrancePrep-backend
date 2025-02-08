@@ -1,10 +1,10 @@
 import { RequestHandler, Router } from "express";
-import { loginUser, logoutUser, registerUser, changePassword } from "../controllers/userController.js";
+import { loginUser, logoutUser, registerUser, changePassword, getUsers } from "../controllers/userController.js";
 import { registerValidator, validateUserDetails } from "../api/user/validators/userValidator.js";
 import passport from "passport";
 import { generateToken } from "../api/user/utils/jwtUtils.js";
 import "../api/user/strategies/googleStrategy.js";
-import { protectedRoutes } from "../middlewares/authMiddleware.js";
+import { isAdmin, protectedRoutes } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
@@ -29,5 +29,7 @@ router.get("/google/redirect", passport.authenticate("google", { failureRedirect
 });
 
 router.put("/change-password", protectedRoutes as RequestHandler, changePassword)
+
+router.get("/get-users",protectedRoutes as RequestHandler,isAdmin as RequestHandler, getUsers);
 
 export default router;

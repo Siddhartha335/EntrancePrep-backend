@@ -42,12 +42,28 @@ export async function questionCreate(data: any) {
         });
 
         // Step 4: Link the question to the test
-        await prisma.test_Question.create({
+        const maxSequenceResult = await prisma.test_Question.findFirst({
+            where: { test_id: test.test_id },
+            select: {
+              sequence: true,
+            },
+            orderBy: {
+              sequence: 'desc', // Order by sequence in descending order to get the highest value
+            },
+          });
+        
+          // Step 2: Calculate the next sequence value
+          const nextSequence = maxSequenceResult ? maxSequenceResult.sequence + 1 : 1;
+        
+          // Step 3: Create the new test_Question record with the calculated sequence
+          await prisma.test_Question.create({
             data: {
-                test_id: (test as any).test_id,
-                question_id: question.question_id,
-            }
-        });
+              test_id:test.test_id,
+              question_id: question.question_id,
+              sequence: nextSequence, // Assign the next sequence
+            },
+          });
+        
 
         // Step 5: Link subcategories if provided
         if (subcategory) {
@@ -74,6 +90,7 @@ export async function questionCreate(data: any) {
         }
         return test;
     } catch (error) {
+        console.log(error)
         throw new Error('Failed to create test');
     }
 }
@@ -131,7 +148,6 @@ export async function selectAllQuestion(category:any) {
 }
 
 export async function selectAllTestQuestion(test_id: any) {
-    console.log(test_id);
     if (test_id !== undefined) {
         test_id = parseInt(test_id);
         // Select distinct question IDs for the given test_id and limit to 100

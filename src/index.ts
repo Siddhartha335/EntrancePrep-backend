@@ -17,7 +17,7 @@ checkDatabaseConnection();
 
 //cors
 app.use(cors({
-    origin: ["http://localhost:3000","http://localhost:3001"],
+    origin: ["http://localhost:3000","http://localhost:3001","https://entranceprep.hamronotes.com"],
     methods: ["GET","POST","PUT","DELETE","PATCH"],
     credentials: true
 }))

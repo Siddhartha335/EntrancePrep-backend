@@ -18,7 +18,7 @@ passport.use(
     new GoogleStrategy({
         clientID: clientID,
         clientSecret: clientSecret,
-        callbackURL: "http://localhost:8000/api/v1/user/google/redirect",
+        callbackURL: "https://entranceprep-api.hamronotes.com/api/v1/user/google/redirect",
     },async (accessToken:any,refreshToken:any,profile:any,done:any)=> {
         try {
             let user = await prisma.user.findUnique({
